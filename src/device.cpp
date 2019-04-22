@@ -32,6 +32,10 @@ void device_execute()
     {
         unsigned long current_time = millis();
         String id = String(_rc.getReceivedValue());
+        unsigned long proto = _rc.getReceivedProtocol();
+        unsigned long bit = _rc.getReceivedBitlength();
+        unsigned long delay = _rc.getReceivedDelay();
+        _rc.resetAvailable();
 
         if ((current_time - _device_id_cache_time) < 3000 && id == _device_id_cache)
             return;
@@ -46,11 +50,13 @@ void device_execute()
             dev.id = id;
             dev.name = id;
             dev.type = "generic";
-            dev.proto = _rc.getReceivedProtocol();
-            dev.bit = _rc.getReceivedBitlength();
-            dev.delay = _rc.getReceivedDelay();
+            dev.proto = proto;
+            dev.bit = bit;
+            dev.delay = delay;
             config_device_set(dev);
         }
+        if (dev.id == NULL)
+            return;
 
         StaticJsonDocument<300> doc;
         doc["id"] = dev.id;

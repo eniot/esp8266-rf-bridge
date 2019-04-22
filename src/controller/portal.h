@@ -29,6 +29,14 @@ void portal_controller()
         _webserver.send(200, ContentHTML, view_portal_device_list());
     });
 
+    _webserver.on("/device/learn-toggle", HTTP_POST, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
+
+        device_learn_toggle();
+        webserver_redirect("/device");
+    });
+
     _webserver.addHandler(new StartUriRequestHandler("/device/", HTTP_GET, [](HTTPMethod method, String path) {
         if (!_check_auth())
             return _webserver.requestAuthentication();
@@ -52,15 +60,13 @@ void portal_controller()
         sscanf(path.c_str(), "/device/%s", devid);
 
         device_t dev = config_device_get(devid);
-        if (dev.id == NULL)
+        if (dev.id != NULL)
         {
-            webserver_redirect("/device");
-            return;
+            dev.name = _webserver.arg("name");
+            dev.type = _webserver.arg("type");
+            config_device_set(dev);
         }
-        dev.name = _webserver.arg("name");
-        dev.type = _webserver.arg("type");
-        config_device_set(dev);
-        _webserver.send(200, ContentHTML, view_portal_device(dev));
+        webserver_redirect("/device");
     }));
 
     _webserver.on("/setup", HTTP_GET, setup_get_handler);

@@ -48,7 +48,7 @@ String view_portal_device(device_t dev)
                      html_display("Delay", String(dev.delay)) +
                      html_button("Save") +
                      "</form>" +
-                     html_row("", "<a onclick=\"{fetch('/api/device/" + dev.id + "', {method: 'delete'}).then(location = '/device')}\">Remove this device</a>") +
+                     html_row("", "<a onclick=\"{fetch('/api/device/" + dev.id + "', {method: 'DELETE'}).then(()=>{location='/device'})}\">Remove this device</a>") +
                      "</div></div></body></html>";
     return content;
 }
