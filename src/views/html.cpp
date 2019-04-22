@@ -1,5 +1,4 @@
-#include <Arduino.h>
-#include "html.h"
+#include "views/html.h"
 
 String html_meta(String content)
 {
@@ -29,7 +28,87 @@ String html_head(String title)
            html_meta("charset='utf-8'") +
            html_meta("http-equiv='X-UA-Compatible' content='IE=edge'") +
            html_meta("name='viewport' content='width=device-width, initial-scale=1'") +
-           "<title>" + title + "</title><style>body{margin:30px;font-size:14px;font-family:system-ui}a{text-decoration:none;color:#0078e7}.mute{color:#999}.active{font-weight:600}.row{display:flex;margin:5px;flex-flow:column}.col{width:100%}.block{padding:10px;font-size:14px;width:100%;display:block}select{-webkit-appearance:none}label,.label{margin-right:20px;padding:10px 0}.btn{background-color:#0078e7;color:white;border:0;font-size:16px;margin:10px auto}.menu{list-style:none;padding:0;display:flex;justify-content:flex-end;margin-bottom:30px}.menu li{display:inline-block}.menu li a{padding:10px}.menu li a:hover,.menu li.active a{text-decoration:none;border-bottom:1px solid #0078e7}@media only screen and (min-width:600px){.row{flex-flow:row}.col{width:50%}}@media only screen and (min-width:768px){.container{max-width:800px;margin:auto}}.home-io{display:flex;justify-content:flex-end}.home-io form{margin:0}.home-io form button{width:80px;height:150;margin:10px;border-radius:54px;color:#0078e7;background-color:transparent;border:1px solid #0078e7}.home-io form button.btn-on{background-color:#0078e7;color:white;border:white}</style></head>";
+           "<title>" + title + R"==(</title><style>
+body{
+    margin:30px;
+    font-size:14px;
+    font-family:system-ui
+}
+a{
+    text-decoration:none;
+    color:#0078e7
+}
+.mute{
+    color:#999
+}
+.active{
+    font-weight:600
+}
+.row{
+    display:flex;
+    margin:5px;
+    flex-flow:column
+}
+.col{
+    width:100%
+}
+.block{
+    padding:10px;
+    font-size:14px;
+    width:100%;
+    display:block
+}
+select{
+    -webkit-appearance:none
+}
+label,.label{
+    margin-right:20px;
+    padding:10px 0
+}
+.btn{
+    background-color:#0078e7;
+    color:white;
+    border:0;
+    font-size:16px;
+    margin:10px auto
+}
+.menu{
+    list-style:none;
+    padding:0;
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:30px
+}
+.menu li{
+    display:inline-block
+}
+.menu li a{
+    padding:10px
+}
+.menu li a:hover,.menu li.active a{
+    text-decoration:none;
+    border-bottom:1px solid #0078e7
+}
+@media only screen and (min-width:600px){
+    .row{
+        flex-flow:row
+    }
+    .col{
+        width:50%
+    }
+}
+@media only screen and (min-width:768px){
+    .container{
+        max-width:800px;
+        margin:auto
+    }
+}
+.home-device .row {
+    border-bottom: 1px solid #0078e7;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+</style></head>)==";
 }
 
 String html_row(String content)
@@ -106,4 +185,9 @@ String html_display(String name, String value, String color)
     char content[400];
     sprintf(content, "<strong class='block' style='color:%s'>%s</strong>", color.c_str(), value.c_str());
     return html_row_with_label(name, String(content));
+}
+
+String html_ip_str(IPAddress ip)
+{
+    return ip.isSet() ? ip.toString() : "";
 }

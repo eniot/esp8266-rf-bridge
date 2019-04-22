@@ -61,7 +61,7 @@ bool _tryconnect()
         return true;
 
     LOG_INFO("Attempting MQTT connection...");
-    if (!_mqttclient.connect(_mqtt_clientid.c_str(), _mqtt_cfg.username.c_str(), _mqtt_cfg.password.c_str()))
+    if (!_mqttclient.connect(_mqtt_clientid.c_str(), _mqtt_cfg.mqtt_username.c_str(), _mqtt_cfg.mqtt_password.c_str()))
     {
         LOG_ERROR(String("MQTT connection Failed, rc: ") + _mqttclient.state());
         return false;
@@ -137,7 +137,7 @@ String mqtt_status()
     root["client_id"] = _mqtt_clientid;
     root["server"] = _mqtt_cfg.server;
     root["port"] = _mqtt_cfg.port;
-    root["username"] = _mqtt_cfg.username;
+    root["username"] = _mqtt_cfg.mqtt_username;
     root["topic_in"] = _mqtt_topic_in;
     root["topic_out"] = _mqtt_topic_out;
     root["topic_err"] = _mqtt_topic_err;

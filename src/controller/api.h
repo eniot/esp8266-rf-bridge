@@ -13,10 +13,11 @@ void _api_resp_true()
 {
     _webserver.send(200, ContentJSON, "true");
 }
+
 void api_controller()
 {
     _webserver.on("/api", HTTP_GET, [] {
-        _webserver.send(200, ContentJSON, "[\"/api/network\",\"/api/mqtt\",\"/api/io/:io_label\",\"/api/access\",\"/api/setup\"]");
+        _webserver.send(200, ContentJSON, "eniot API");
     });
 
     // MQTT APIs
@@ -34,6 +35,17 @@ void api_controller()
         _api_resp_true();
         mqtt_setup();
     });
+
+    _webserver.addHandler(new StartUriRequestHandler("/api/device/", HTTP_DELETE, [](HTTPMethod method, String path) {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
+
+        char devid[15];
+        sscanf(path.c_str(), "/api/device/%s", devid);
+
+        config_device_remove(devid);
+        _api_resp_true();
+    }));
 
     // Network APIs
     _webserver.on("/api/network", HTTP_GET, [] {

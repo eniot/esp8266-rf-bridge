@@ -19,7 +19,7 @@ void setup()
     network_setup();
     webserver_setup();
     mqtt_setup();
-    device_setup();
+    device_setup(12);
 }
 
 void loop()
@@ -27,6 +27,7 @@ void loop()
     network_execute();
     webserver_execute();
     mqtt_execute();
+    device_execute();
 }
 
 bool reset_await()

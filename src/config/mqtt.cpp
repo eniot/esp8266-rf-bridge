@@ -33,8 +33,8 @@ void config_mqtt_get(config_mqtt_t *data)
     data->mqtt = doc["mqtt"].as<bool>();
     data->server = doc["server"].as<String>();
     data->port = doc["port"].as<int>();
-    data->username = doc["username"].as<String>();
-    data->password = doc["password"].as<String>();
+    data->mqtt_username = doc["username"].as<String>();
+    data->mqtt_password = doc["password"].as<String>();
     data->topic = doc["topic"].as<String>();
 
     doc.clear();
@@ -46,8 +46,8 @@ void config_mqtt_set(config_mqtt_t data)
     doc["mqtt"] = data.mqtt;
     doc["server"] = data.server;
     doc["port"] = data.port;
-    doc["username"] = data.username;
-    doc["password"] = data.password;
+    doc["username"] = data.mqtt_username;
+    doc["password"] = data.mqtt_password;
     doc["topic"] = data.topic;
 
     if (SPIFFS.exists(_mqtt_json))
@@ -68,7 +68,7 @@ config_mqtt_t config_mqtt_default()
     mdata.server = "mqtt.local";
     mdata.port = 1883;
     mdata.topic = "";
-    mdata.username = "";
-    mdata.password = "";
+    mdata.mqtt_username = "";
+    mdata.mqtt_password = "";
     return mdata;
 }

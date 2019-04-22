@@ -5,7 +5,8 @@
 
 struct config_access_t
 {
-    String access;
+    String username;
+    String password;
 };
 
 config_access_t config_access_get();

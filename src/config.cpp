@@ -8,7 +8,8 @@ void config_init()
     while (!SPIFFS.begin())
     {
     };
-    if (!SPIFFS.exists(".formatted"))
+    const char *formatfile = "formatted";
+    if (!SPIFFS.exists(formatfile))
     {
         LOG_INFO("Formatting SPIFFS")
         if (!SPIFFS.format())
@@ -16,7 +17,8 @@ void config_init()
             LOG_ERROR("Error formatting SPIFFS");
             return;
         }
-        File f = SPIFFS.open(".formatted", "w");
+        File f = SPIFFS.open(formatfile, "w");
+        f.print(1);
         f.close();
     }
 }

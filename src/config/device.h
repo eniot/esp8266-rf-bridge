@@ -8,15 +8,20 @@ struct device_t
     String id;
     String name;
     String type;
+    unsigned int proto;
+    unsigned int delay;
+    unsigned int bit;
 };
 
-struct device_config_t
+struct device_list_t
 {
-    device_t *devices;
-    size_t size;
+    String *ids;
+    size_t count;
 };
 
-void config_device_set(String json);
-device_config_t config_device_get();
+void config_device_set(device_t device);
+device_t config_device_get(String id, bool tech_spec = true);
+void config_device_remove(String id);
+device_list_t config_device_list();
 
 #endif

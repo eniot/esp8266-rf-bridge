@@ -8,8 +8,8 @@ struct config_mqtt_t
     bool mqtt;
     String server;
     int16_t port;
-    String username;
-    String password;
+    String mqtt_username;
+    String mqtt_password;
     String topic;
 };
 

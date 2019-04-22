@@ -3,43 +3,90 @@
 #include <ArduinoJson.h>
 #include "Logger.h"
 
-const char *_device_json = "device.json";
+const char *_devicedir = "/device";
 
-void config_device_set(String json)
+String _config_device_filepath(String id)
 {
-    if (SPIFFS.exists(_device_json))
-    {
-        SPIFFS.remove(_device_json);
-    }
-    File file = SPIFFS.open(_device_json, "w");
-    file.print(json);
-    file.flush();
-    file.close();
+    char path[50];
+    sprintf(path, "%s/%s.json", _devicedir, id.c_str());
+    return String(path);
 }
 
-device_config_t config_device_get()
+void config_device_set(device_t device)
 {
-    if (!SPIFFS.exists(_device_json))
-        return device_config_t{};
+    device.name = device.name == "" ? device.id : device.name;
+    StaticJsonDocument<300> doc;
+    doc["id"] = device.id;
+    doc["name"] = device.name;
+    doc["type"] = device.type;
+    doc["proto"] = device.proto;
+    doc["bit"] = device.bit;
+    doc["delay"] = device.delay;
+    String content;
+    serializeJson(doc, content);
+    String path = _config_device_filepath(device.id);
+    if (SPIFFS.exists(path))
+        SPIFFS.remove(path);
+    File f = SPIFFS.open(path, "w");
+    f.print(content);
+    f.flush();
+    f.close();
+}
 
-    File file = SPIFFS.open(_device_json, "r");
-    String content = file.readString();
-    file.close();
-    DynamicJsonDocument doc(1024);
-    deserializeJson(doc, content);
-    JsonArray array = doc.as<JsonArray>();
-    device_config_t conf;
-    conf.size = array.size();
-    conf.devices = new device_t[conf.size];
-    for (size_t i = 0; i < conf.size; i++)
+device_t config_device_get(String id, bool tech_spec)
+{
+    String path = _config_device_filepath(id);
+    if (!SPIFFS.exists(path))
     {
-        JsonArray obj = array[i].as<JsonArray>();
-        device_t dev;
-        dev.id = obj[0].as<String>();
-        dev.name = obj[1].as<String>();
-        dev.type = obj[2].as<String>();
-        conf.devices[i] = dev;
+        return device_t{};
     }
-    doc.clear();
-    return conf;
+    File f = SPIFFS.open(path, "r");
+    String content = f.readString();
+    StaticJsonDocument<300> doc;
+    deserializeJson(doc, content);
+    device_t dev;
+    dev.id = doc["id"].as<String>();
+    dev.name = doc["name"].as<String>();
+    dev.type = doc["type"].as<String>();
+    if (tech_spec)
+    {
+        dev.bit = doc["bit"].as<int>();
+        dev.proto = doc["proto"].as<int>();
+        dev.delay = doc["delay"].as<int>();
+    }
+    return dev;
+}
+
+int _config_device_count()
+{
+    int count = 0;
+    Dir d = SPIFFS.openDir(_devicedir);
+    while (d.next())
+    {
+        count++;
+    }
+    return count;
+}
+
+device_list_t config_device_list()
+{
+    size_t count = _config_device_count();
+    String *ids = new String[count];
+    Dir d = SPIFFS.openDir(_devicedir);
+    for (size_t i = 0; i < count; i++)
+    {
+        d.next();
+        ids[i] = d.fileName().substring(strlen(_devicedir) + 1, d.fileName().length() - 5);
+    }
+    device_list_t ls;
+    ls.count = count;
+    ls.ids = ids;
+    return ls;
+}
+
+void config_device_remove(String id)
+{
+    String path = _config_device_filepath(id);
+    if (SPIFFS.exists(path))
+        SPIFFS.remove(path);
 }

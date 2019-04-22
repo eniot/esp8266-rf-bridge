@@ -22,7 +22,6 @@ void config_network_get(config_network_t *data)
     File f = SPIFFS.open(_network_json, "r");
     String content = f.readString();
     f.close();
-
     StaticJsonDocument<512> doc;
     deserializeJson(doc, content);
 
@@ -37,6 +36,11 @@ void config_network_get(config_network_t *data)
     data->dns1.fromString(doc["dns2"].as<String>());
 }
 
+String _config_ip_str(IPAddress ip)
+{
+    return ip.isSet() ? ip.toString() : "";
+}
+
 void config_network_set(config_network_t data)
 {
     if (data.dhcp)
@@ -48,12 +52,12 @@ void config_network_set(config_network_t data)
     doc["ssid"] = data.wifi_ssid;
     doc["password"] = data.wifi_password;
     doc["dhcp"] = data.dhcp;
-    doc["ip"] = data.ip.toString();
-    doc["subnet"] = data.subnet.toString();
-    doc["gateway"] = data.gateway.toString();
+    doc["ip"] = _config_ip_str(data.ip);
+    doc["subnet"] = _config_ip_str(data.subnet);
+    doc["gateway"] = _config_ip_str(data.gateway);
     doc["dns"] = data.dns;
-    doc["dns1"] = data.dns1.toString();
-    doc["dns2"] = data.dns2.toString();
+    doc["dns1"] = _config_ip_str(data.dns1);
+    doc["dns2"] = _config_ip_str(data.dns2);
 
     File f = SPIFFS.open(_network_json, "w");
     String content;
