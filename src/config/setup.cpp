@@ -9,6 +9,7 @@ void config_setup(config_setup_t data)
     config_network_set(data);
     config_access_set(data);
     config_mqtt_set(data);
+    config_name_set(data.name);
 
     File f = SPIFFS.open(".activated", "w");
     f.close();

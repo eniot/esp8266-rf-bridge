@@ -20,6 +20,11 @@ void _update_network_from_web(config_network_t *data)
     }
 }
 
+void _update_name_from_web(config_setup_t *data)
+{
+    data->name = _webserver.arg("name");
+}
+
 void _update_access_from_web(config_access_t *data)
 {
     data->username = _webserver.arg("username");
@@ -54,4 +59,5 @@ void _update_setup_from_web(config_setup_t *data)
     _update_access_from_web(data);
     _update_network_from_web(data);
     _update_mqtt_from_web(data);
+    _update_name_from_web(data);
 }

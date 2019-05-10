@@ -6,6 +6,10 @@
 
 config_network_t _cfg_network;
 
+#ifdef SONOFF_BRIDGE
+#define NETWORK_LED 13
+#endif
+
 void _network_sta()
 {
     _cfg_network = config_network_get();
@@ -28,9 +32,19 @@ void _network_sta()
             LOG_INFO("Restarting...");
             ESP.restart();
         }
+#ifdef SONOFF_BRIDGE
+        digitalWrite(NETWORK_LED, LOW);
+        delay(250);
+        digitalWrite(NETWORK_LED, HIGH);
+        delay(250);
+#else
         delay(500);
+#endif
         currTime += 500;
     }
+#ifdef SONOFF_BRIDGE
+    digitalWrite(NETWORK_LED, LOW);
+#endif
     LOG_INFO("Connected to Network");
     PRINTSTATUS("IP", WiFi.localIP().toString() + " netmask " + WiFi.subnetMask().toString());
     PRINTSTATUS("GW", WiFi.gatewayIP().toString());
@@ -52,6 +66,9 @@ void _network_ap()
 
 void network_setup()
 {
+#ifdef SONOFF_BRIDGE
+    pinMode(NETWORK_LED, OUTPUT);
+#endif
     return config_setup_complete() ? _network_sta() : _network_ap();
 }
 

@@ -7,5 +7,5 @@ void logger_init()
     {
         ;
     }
-    Serial.println();
+    PRINTLN()
 }

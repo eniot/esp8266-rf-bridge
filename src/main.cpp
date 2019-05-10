@@ -19,7 +19,7 @@ void setup()
     network_setup();
     webserver_setup();
     mqtt_setup();
-    device_setup(12);
+    device_setup(5);
 }
 
 void loop()

@@ -7,6 +7,7 @@
 
 struct config_setup_t : config_network_t, config_access_t, config_mqtt_t
 {
+    String name;
 };
 
 bool config_setup_complete();

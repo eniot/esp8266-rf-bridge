@@ -3,17 +3,24 @@
 #include <FS.h>
 #include <Logger.h>
 #include <ArduinoJson.h>
-#include <RCSwitch.h>
 #include "mqtt.h"
 
-bool _device_learn = false;
+#ifdef SONOFF_BRIDGE
+#include "RFSerial.h"
+#else
+#include <RCSwitch.h>
 RCSwitch _rc = RCSwitch();
+#endif
+
+bool _device_learn = false;
 String _device_id_cache = "";
 unsigned long _device_id_cache_time = 0;
 
 void device_setup(int pin)
 {
+#ifndef SONOFF_BRIDGE
     _rc.enableReceive(pin);
+#endif
 }
 
 void device_learn_toggle()
@@ -28,14 +35,26 @@ bool device_learn()
 
 void device_execute()
 {
+#ifdef SONOFF_BRIDGE
+    if (rf_serial_available(4))
+#else
     if (_rc.available())
+#endif
     {
         unsigned long current_time = millis();
+
+#ifdef SONOFF_BRIDGE
+        String id = rf_serial_read();
+        unsigned long proto = 10;
+        unsigned long bit = 40;
+        unsigned long delay = -1;
+#else
         String id = String(_rc.getReceivedValue());
         unsigned long proto = _rc.getReceivedProtocol();
         unsigned long bit = _rc.getReceivedBitlength();
         unsigned long delay = _rc.getReceivedDelay();
         _rc.resetAvailable();
+#endif
 
         if ((current_time - _device_id_cache_time) < 3000 && id == _device_id_cache)
             return;
