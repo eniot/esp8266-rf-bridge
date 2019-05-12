@@ -57,7 +57,7 @@ void portal_controller()
             return _webserver.requestAuthentication();
 
         char devid[15];
-        sscanf(path.c_str(), "/device/%s", devid);
+        sscanf(path.c_str(), "/device/%[0-9,a-z,A-Z,' ']s", devid);
 
         device_t dev = config_device_get(devid);
         if (dev.id != NULL)

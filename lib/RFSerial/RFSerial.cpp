@@ -13,7 +13,7 @@ bool rf_serial_available(int length)
     while (Serial.available())
     {
         char hex[2];
-        sprintf(hex, "%2X", Serial.read());
+        sprintf(hex, "%.2X", Serial.read());
         _rf_content += hex;
         _rf_byte_count++;
     }

@@ -23,5 +23,6 @@ void config_device_set(device_t device);
 device_t config_device_get(String id, bool tech_spec = true);
 void config_device_remove(String id);
 device_list_t config_device_list();
+void config_device_reset();
 
 #endif

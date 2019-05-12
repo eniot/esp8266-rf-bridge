@@ -41,11 +41,18 @@ void api_controller()
             return _webserver.requestAuthentication();
 
         char devid[15];
-        sscanf(path.c_str(), "/api/device/%s", devid);
+        sscanf(path.c_str(), "/api/device/%[0-9,a-z,A-Z,' ']s", devid);
 
         config_device_remove(devid);
         _api_resp_true();
     }));
+
+    _webserver.on("/api/device", HTTP_DELETE, [] {
+        if (!_check_auth())
+            return _webserver.requestAuthentication();
+        config_device_reset();
+        _api_resp_true();
+    });
 
     // Network APIs
     _webserver.on("/api/network", HTTP_GET, [] {

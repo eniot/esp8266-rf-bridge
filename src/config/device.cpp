@@ -90,3 +90,12 @@ void config_device_remove(String id)
     if (SPIFFS.exists(path))
         SPIFFS.remove(path);
 }
+
+void config_device_reset()
+{
+    Dir d = SPIFFS.openDir(_devicedir);
+    while (d.next())
+    {
+        SPIFFS.remove(d.fileName());
+    }
+}

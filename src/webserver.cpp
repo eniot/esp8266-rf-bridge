@@ -9,17 +9,16 @@
 
 ESP8266WebServer _webserver(80);
 
-#ifndef OTA_ENABLED
-#define _setup_ota_server() 
-#else
+#ifdef OTA_ENABLED
 #include <ESP8266HTTPUpdateServer.h>
 ESP8266HTTPUpdateServer _httpUpdater;
-void _setup_ota_server() 
+void _setup_ota_server()
 {
-    String password = config_access_get().access;
-    password.trim();
-    _httpUpdater.setup(&_webserver, "/ota", "admin", password);
+    config_access_t access = config_access_get();
+    _httpUpdater.setup(&_webserver, "/ota", access.username, access.password);
 }
+#else
+#define _setup_ota_server()
 #endif
 
 void webserver_setup()
@@ -30,7 +29,7 @@ void webserver_setup()
         _setup_ota_server();
     }
     else
-        setup_controller();    
+        setup_controller();
 
     api_controller();
 
