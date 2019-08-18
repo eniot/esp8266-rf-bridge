@@ -18,7 +18,9 @@ unsigned long _device_id_cache_time = 0;
 
 void device_setup(int pin)
 {
-#ifndef SONOFF_BRIDGE
+#ifdef SONOFF_BRIDGE
+    rf_serial_setup(19200);
+#else
     _rc.enableReceive(pin);
 #endif
 }
@@ -36,31 +38,29 @@ bool device_learn()
 void device_execute()
 {
 #ifdef SONOFF_BRIDGE
-    if (rf_serial_available(4))
+    if (rf_serial_available())
+    {
+        rf_message msg = rf_serial_read();
+        String id = msg.stemp;
+        unsigned long proto = msg.action;
+        unsigned long bit = 24;
+        unsigned long delay = msg.sync_time;
 #else
     if (_rc.available())
-#endif
     {
         unsigned long current_time = millis();
-
-#ifdef SONOFF_BRIDGE
-        String id = rf_serial_read();
-        unsigned long proto = 10;
-        unsigned long bit = 40;
-        unsigned long delay = -1;
-#else
         String id = String(_rc.getReceivedValue());
         unsigned long proto = _rc.getReceivedProtocol();
         unsigned long bit = _rc.getReceivedBitlength();
         unsigned long delay = _rc.getReceivedDelay();
         _rc.resetAvailable();
-#endif
 
         if ((current_time - _device_id_cache_time) < 3000 && id == _device_id_cache)
             return;
 
         _device_id_cache = id;
         _device_id_cache_time = current_time;
+#endif
 
         device_t dev = config_device_get(id);
         if (dev.id == NULL && _device_learn)
